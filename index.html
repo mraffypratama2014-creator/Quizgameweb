@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamer Ultimate Quiz 🎮</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1e2f, #0f0f1b);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
+        .game-card {
+            background: #2a2a40;
+            width: 100%;
+            max-width: 550px;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border: 1px solid #3d3d5c;
+        }
+
+        h1 {
+            color: #00ffcc;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        .subtitle {
+            color: #a0a0c0;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: left;
+            margin: 15px 0 8px 0;
+            color: #ffcc00;
+        }
+
+        .mode-grid, .diff-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card-btn {
+            background: #363654;
+            border: 2px solid #4a4a70;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .card-btn:hover {
+            background: #4a4a70;
+            transform: translateY(-2px);
+        }
+
+        .card-btn.selected {
+            border-color: #00ffcc;
+            background: #00ffcc22;
+            color: #00ffcc;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #1e1e2f;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border: 1px solid #3d3d5c;
+        }
+
+        .question-box {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .opt-btn {
+            background: #363654;
+            border: 2px solid #4a4a70;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .opt-btn:hover {
+            background: #4a4a70;
+        }
+
+        .btn-action {
+            background: linear-gradient(90deg, #00ffcc, #0099ff);
+            color: #0f0f1b;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .correct {
+            background: #28a745 !important;
+            border-color: #28a745 !important;
+            color: white;
+        }
+
+        .wrong {
+            background: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+
+    <!-- 1. BERANDA -->
+    <div id="home-screen">
+        <h1>Gamer Master 🎮</h1>
+        <p class="subtitle">Uji pengetahuan gamer sejati dari Easy hingga Impossible!</p>
+
+        <div class="section-title">1. Pilih Game:</div>
+        <div class="mode-grid">
+            <button class="card-btn selected" onclick="selectMode('roblox', this)">🔴 Roblox</button>
+            <button class="card-btn" onclick="selectMode('minecraft', this)">🟩 Minecraft</button>
+            <button class="card-btn" onclick="selectMode('ff', this)">🔥 Free Fire</button>
+            <button class="card-btn" onclick="selectMode('ml', this)">⚔️ Mobile Legends</button>
+        </div>
+
+        <div class="section-title">2. Pilih Tingkat Kesulitan:</div>
+        <div class="diff-grid">
+            <button class="card-btn selected" onclick="selectDiff('easy', this)">🟢 Easy</button>
+            <button class="card-btn" onclick="selectDiff('medium', this)">🟡 Medium</button>
+            <button class="card-btn" onclick="selectDiff('hard', this)">🔴 Hard</button>
+            <button class="card-btn" onclick="selectDiff('impossible', this)">💀 Impossible</button>
+        </div>
+
+        <button class="btn-action" onclick="startGame()">Mulai Permainan 🚀</button>
+    </div>
+
+    <!-- 2. LAYAR PERMAINAN -->
+    <div id="game-screen" class="hidden">
+        <div class="stats-bar">
+            <span>Soal: <span id="question-num">1</span>/<span id="total-q">10</span></span>
+            <span style="color:#00ffcc">Skor: <span id="score">0</span></span>
+        </div>
+
+        <div class="question-box" id="question-text">
+            Pertanyaan...
+        </div>
+
+        <div class="options-grid" id="options-container">
+            <!-- Pilihan jawaban -->
+        </div>
+    </div>
+
+    <!-- 3. LAYAR HASIL -->
+    <div id="end-screen" class="hidden">
+        <h2>Permainan Selesai! 🎉</h2>
+        <p class="subtitle">Mode: <span id="res-mode" style="color:#00ffcc"></span> | Difficulty: <span id="res-diff" style="color:#ffcc00"></span></p>
+        <h1 style="font-size: 3rem; color: #00ffcc;" id="final-score">0</h1>
+        <p id="rank-text" style="font-weight: bold; font-size: 1.1rem;"></p>
+        <button class="btn-action" onclick="goHome()">Kembali ke Beranda 🏠</button>
+    </div>
+
+</div>
+
+<script>
+    // DATABASE SOAL BERAGAM & RIIL
+    const questionBank = {
+        roblox: {
+            easy: [
+                { question: "Apa nama mata uang utama di game Roblox?", options: ["Gold", "V-Bucks", "Robux", "Gems"], answer: 2 },
+                { question: "Karakter pemula tanpa kustomisasi di Roblox sering dipanggil...", options: ["Pro", "Noob", "Hacker", "Admin"], answer: 1 },
+                { question: "Game Roblox yang bertema mengadopsi hewan peliharaan adalah...", options: ["Adopt Me!", "Brookhaven", "Blox Fruits", "Arsenal"], answer: 0 },
+                { question: "Bentuk dasar avatar standar Roblox sangat mirip dengan permainan...", options: ["Rubik", "Lego", "Minecraft", "Tetris"], answer: 1 },
+                { question: "Software khusus yang digunakan untuk membuat game di Roblox bernama...", options: ["Roblox Maker", "Roblox Studio", "Roblox Engine", "Roblox Craft"], answer: 1 }
+            ],
+            medium: [
+                { question: "Bahasa pemrograman apa yang digunakan untuk membuat script di Roblox Studio?", options: ["Python", "C++", "Lua", "JavaScript"], answer: 2 },
+                { question: "Game Blox Fruits di Roblox terinspirasi dari anime terkenal berjudul...", options: ["Naruto", "One Piece", "Bleach", "Dragon Ball"], answer: 1 },
+                { question: "Suara kematian khas Roblox yang terkenal dan sempat diganti adalah...", options: ["Oof!", "Ouch!", "Bye!", "Kaboom!"], answer: 0 },
+                { question: "Di game Brookhaven RP, pemain bisa memiliki rumah dan mobil secara...", options: ["Gratis / Bebas", "Bayar 1000 Robux", "Harus Level 100", "Beli Pakai Gems"], answer: 0 },
+                { question: "Fitur keamanan akun di Roblox untuk verifikasi 2 langkah disebut...", options: ["2FA", "Pin Lock", "Passkey", "Safe Guard"], answer: 0 }
+            ],
+            hard: [
+                { question: "Siapa nama salah satu pendiri Roblox yang meninggal dunia pada tahun 2013?", options: ["David Baszucki", "Erik Cassel", "John Shedletsky", "Builderman"], answer: 1 },
+                { question: "Sebelum bernama Roblox, nama alpha/beta awal platform ini pada tahun 2004 adalah...", options: ["DynaBlocks", "BlockWorld", "RBLX Online", "Buildit"], answer: 0 },
+                { question: "Tahun berapakah Roblox pertama kali dirilis secara resmi ke publik?", options: ["2004", "2006", "2008", "2010"], answer: 1 },
+                { question: "Apa nama peristiwa hilangnya server Roblox selama hampir 3 hari pada Oktober 2021?", options: ["The Great Crash", "Chipotle Outage", "October Darkness", "Server Apocalypse"], answer: 1 },
+                { question: "Engine pencahayaan modern yang digunakan di Roblox Studio adalah...", options: ["Voxel", "Future is Bright", "RayTracing 1.0", "ShadowFX"], answer: 1 }
+            ],
+            impossible: [
+                { question: "Siapa user ID ke-1 di dalam database platform Roblox?", options: ["David.baszucki", "Roblox", "Builderman", "Admin"], answer: 1 },
+                { question: "Apa nama barang / hat terbatas (Limited) paling mahal dan legendaris di Roblox?", options: ["Dominus Empyreus", "Dominus Frigidus", "Valkyrie Helm", "Clockwork Shades"], answer: 0 },
+                { question: "Berapa rasio konversi standar Robux ke USD melalui program Developer Exchange (DevEx)?", options: ["100k R$ = $350", "100k R$ = $100", "50k R$ = $500", "1M R$ = $1000"], answer: 0 },
+                { question: "Format file khusus untuk menyimpan tempat/map di Roblox Studio adalah...", options: ["rbxl / rbxlx", "rbxmx", "rbxobj", "robloxmap"], answer: 0 },
+                { question: "Sistem fisika destruksi partikel di awal Roblox era 2007 dinamakan...", options: ["CSG V2", "Explosive Grid", "CSG Physics", "Distributed Physics"], answer: 3 }
+            ]
+        },
+        minecraft: {
+            easy: [
+                { question: "Bahan apa yang dibutuhkan untuk membuat Crafting Table di Minecraft?", options: ["4 Batu", "4 Kayu (Planks)", "2 Besi", "4 Pasir"], answer: 1 },
+                { question: "Monster ikonik berwarna hijau yang suka meledak di dekat pemain adalah...", options: ["Zombie", "Skeleton", "Creeper", "Enderman"], answer: 2 },
+                { question: "Barang tambang paling berharga untuk membuat perlengkapan kuat tingkat lanjut adalah...", options: ["Coal", "Diamond", "Gold", "Copper"], answer: 1 },
+                { question: "Karakter laki-laki default bertopi biru di Minecraft bernama...", options: ["Alex", "Steve", "Notch", "Herobrine"], answer: 1 },
+                { question: "Dunia bawah tanah berbahaya yang dapat diakses melalui portal Obsidian adalah...", options: ["The End", "Nether", "Aether", "Deep Dark"], answer: 1 }
+            ],
+            medium: [
+                { question: "Bahan terkuat di Minecraft yang lebih keras dibanding Diamond adalah...", options: ["Obsidian", "Netherite", "Bedrock", "Emerald"], answer: 1 },
+                { question: "Monster raksasa yang menjadi boss utama di dimensi The End bernama...", options: ["Wither", "Ender Dragon", "Elder Guardian", "Warden"], answer: 1 },
+                { question: "Komponen listrik dan logika di Minecraft dinamakan...", options: ["Blue Power", "Redstone", "Glowstone", "Lapis Lazuli"], answer: 1 },
+                { question: "Apa yang terjadi jika pemain mencoba tidur di kasur saat berada di Nether?", options: ["Tidur Nyenyak", "Kasur Meledak", "Muncul Monster", "Darah Bertambah"], answer: 1 },
+                { question: "Bioma paling berbahaya di bawah tanah tempat tinggal Warden dinamakan...", options: ["Dripstone Cave", "Deep Dark", "Lush Cave", "Mineshaft"], answer: 1 }
+            ],
+            hard: [
+                { question: "Siapa pencipta asli game Minecraft sebelum dibeli oleh Microsoft?", options: ["Jeb", "Notch (Markus Persson)", "C418", "Dinnerbone"], answer: 1 },
+                { question: "Berapa jumlah maksimal blok yang bisa ditumpuk dalam satu slot inventory (Stack)?", options: ["16", "32", "64", "100"], answer: 2 },
+                { question: "Efek khusus jika memberi nama hewan 'Dinnerbone' dengan Name Tag adalah...", options: ["Hewan Berwarna Pelangi", "Hewan Terbalik", "Hewan Menjadi Raksasa", "Hewan Hilang"], answer: 1 },
+                { question: "Pengomposisi lagu dan musik latar belakang ikonik Minecraft versi awal adalah...", options: ["C418", "Lena Raine", "Gareth Coker", "Tobu"], answer: 0 },
+                { question: "Berapa jumlah mata Ender (Eyes of Ender) maksimal yang dibutuhkan untuk mengaktifkan End Portal?", options: ["8", "10", "12", "16"], answer: 2 }
+            ],
+            impossible: [
+                { question: "Berapa tinggi koordinat maksimum (Y-level) untuk membangun blok di Minecraft modern?", options: ["256", "320", "512", "1024"], answer: 1 },
+                { question: "Nama versi prototype sangat awal dari Minecraft yang dibuat Notch dalam waktu 6 hari adalah...", options: ["Cave Game", "Craft World", "Block Builder", "Miner 3D"], answer: 0 },
+                { question: "Berapa tick dalam 1 detik di dalam sistem internal pemrosesan Minecraft (TPS)?", options: ["10 Ticks", "20 Ticks", "30 Ticks", "60 Ticks"], answer: 1 },
+                { question: "Wilayah pembatas dunia ekstrem yang rusak di Minecraft versi lama (sebelum Beta 1.8) disebut...", options: ["End Zone", "Far Lands", "Null Void", "Void Edge"], answer: 1 },
+                { question: "Berapa persentase peluang sebuah portal End spawns secara alami dengan 12 Eye of Ender langsung terpasang?", options: ["1 dari 1 Triliun", "1 dari 100 Ribu", "1 dari 1 Juta", "1 dari 10 Juta"], answer: 0 }
+            ]
+        },
+        ff: {
+            easy: [
+                { question: "Mata uang premium di Free Fire yang digunakan untuk membeli item dinamakan...", options: ["Gold", "Diamond", "Gems", "V-Bucks"], answer: 1 },
+                { question: "Dinding es darurat yang digunakan untuk berlindung di Free Fire adalah...", options: ["Ice Shield", "Gloo Wall", "Frost Guard", "Ice Barrier"], answer: 1 },
+                { question: "Sebutan untuk kemenangan di dalam pertempuran Free Fire adalah...", options: ["Chicken Dinner", "Victory", "Booyah!", "Savage"], answer: 2 },
+                { question: "Map paling pertama dan klasik di game Free Fire bernama...", options: ["Kalahari", "Bermuda", "Purgatory", "Alpine"], answer: 1 },
+                { question: "Kendaraan roda empat paling cepat di Free Fire adalah...", options: ["Monster Truck", "Sports Car (Mobil Balap)", "Jeep", "TukTuk"], answer: 1 }
+            ],
+            medium: [
+                { question: "Karakter Free Fire hasil kolaborasi dengan DJ terkenal yang memiliki skill lingkaran penyembuh adalah...", options: ["Chrono", "Alok", "K", "Skyler"], answer: 1 },
+                { question: "Karakter hasil kolaborasi dengan bintang sepak bola Cristiano Ronaldo adalah...", options: ["Chrono", "Luqueta", "Cristiano", "A124"], answer: 0 },
+                { question: "Senjata Sniper paling mematikan yang biasa didapatkan dari Airdrop adalah...", options: ["Kar98k", "M82B", "AWM", "SVD"], answer: 2 },
+                { question: "Fitur yang memberikan perlindungan rompi dari ledakan helm & armor adalah...", options: ["Vest Enforcer", "Vest Thickener / Vest Level 4", "Armor Shield", "Helme Protector"], answer: 1 },
+                { question: "Sistem pangkat tertinggi di Free Fire di atas Master dinamakan...", options: ["Heroic", "Grandmaster", "Epic", "Supreme"], answer: 1 }
+            ],
+            hard: [
+                { question: "Tahun berapa game Free Fire resmi diluncurkan oleh Garena?", options: ["2016", "2017", "2018", "2019"], answer: 1 },
+                { question: "Nama perusahaan pengembang asli (developer) di balik game Free Fire adalah...", options: ["111dots Studio", "Tencent Games", "Moonton", "Krafton"], answer: 0 },
+                { question: "Senjata Shotgun yang terkenal dengan sebutan 'Sg Kayu' atau 'Sg 2' oleh pemain Indo adalah...", options: ["M1014", "M1887", "SPAS12", "MAG-7"], answer: 1 },
+                { question: "Turnamen internasional skala dunia resmi teratas untuk game Free Fire dinamakan...", options: ["FFWS (Free Fire World Series)", "FFPL", "FFAC", "Free Fire International"], answer: 0 },
+                { question: "Karakter bernama Kelly dalam latar belakang ceritanya memiliki nama asli yaitu...", options: ["Shimada Kiriko", "Caroline", "Moco", "Evita"], answer: 0 }
+            ],
+            impossible: [
+                { question: "Berapa damage maksimal senjata AWM saat mengenai kepala (Headshot) tanpa helm?", options: ["300", "1100", "9999", "500"], answer: 1 },
+                { question: "Berapa durasi waktu aktif dari skill kubah pelindung milik Chrono saat pertama kali dirilis (sebelum di-nerf)?", options: ["5 Detik", "9 Detik", "12 Detik", "15 Detik"], answer: 1 },
+                { question: "Senjata mana yang memiliki sistem overheat alih-alih peluru magazin?", options: ["CG15", "Plasma Gun", "Heatgun 2.0", "Kord"], answer: 1 },
+                { question: "Nama kota lokasi pelabuhan peti kemas di bagian timur laut Map Bermuda adalah...", options: ["Shipyard", "Plantation", "Pochinok", "Rim Nam Village"], answer: 0 },
+                { question: "Berapa nilai statistik maksimum kecepatan tembak (Rate of Fire) yang bisa ditingkatkan skin senjata?", options: ["+1", "+2", "+3", "+5"], answer: 1 }
+            ]
+        },
+        ml: {
+            easy: [
+                { question: "Hero Mage/Marksman pertama yang didapatkan pemain pemula saat tutorial ML adalah...", options: ["Miya", "Layla", "Zilong", "Eudora"], answer: 1 },
+                { question: "Peta utama yang digunakan dalam mode pertandingan Ranked/Classic di ML adalah...", options: ["Land of Dawn", "Celestial Palace", "Imperial Sanctuary", "Eruditio"], answer: 0 },
+                { question: "Monster raksasa paling kuat yang jika dikalahkan akan membantu menyerang turret musuh adalah...", options: ["Turtle", "Lord", "Lithowanderer", "Siren"], answer: 1 },
+                { question: "Mata uang utama untuk membeli Hero baru di Mobile Legends adalah...", options: ["Diamond", "Battle Points (BP)", "Ticket", "Magic Dust"], answer: 1 },
+                { question: "Spell wajib yang digunakan oleh peran Jungler adalah...", options: ["Flicker", "Flameshot", "Retribution", "Execute"], answer: 2 }
+            ],
+            medium: [
+                { question: "Role hero yang bertugas menerima damage utama dan melindungi tim adalah...", options: ["Assassin", "Tank", "Mage", "Support"], answer: 1 },
+                { question: "Sebutan untuk mengalahkan 5 hero musuh secara berturut-turut dalam waktu singkat adalah...", options: ["Triple Kill", "Maniac", "Savage", "Wipe Out"], answer: 2 },
+                { question: "Hero Assassin terkenal yang memiliki mekanik penggunaan kabel sangat rumit adalah...", options: ["Lancelot", "Fanny", "Hayabusa", "Gusion"], answer: 1 },
+                { question: "Item yang memberikan efek 'Kekebalan sementara dari kematian' (Immortal) dinamakan...", options: ["Winter Truncheon", "Immortality", "Wind of Nature", "Athena Shield"], answer: 1 },
+                { question: "Monster kura-kura yang memberikan tambahan Gold dan Shield bagi seluruh tim adalah...", options: ["Turtle", "Lord", "Crab", "Gargoyle"], answer: 0 }
+            ],
+            hard: [
+                { question: "Siapa nama tim asal Indonesia yang menjuarai turnamen dunia M1 World Championship?", options: ["RRQ Hoshi", "EVOS Legends", "ONIC Esports", "Alter Ego"], answer: 1 },
+                { question: "Berapa jumlah maksimal pengurangan Cooldown (Cooldown Reduction) yang bisa dicapai dari item/emblem?", options: ["30%", "40%", "45%", "50%"], answer: 1 },
+                { question: "Hero mana yang memiliki skill pasif mengumpulkan stack 'Soul' dari minion/hero untuk meningkatkan Lifesteal & Damage?", options: ["Aldous", "Cecilion", "Alice", "Freya"], answer: 2 },
+                { question: "Perusahaan pengembang (developer) utama game Mobile Legends: Bang Bang adalah...", options: ["Tencent", "Garena", "Moonton", "NetEase"], answer: 2 },
+                { question: "Item Defense khusus untuk meredam serangan Magic Burst berkelanjutan adalah...", options: ["Radiant Armor", "Athena's Shield", "Oracle", "Cursed Helmet"], answer: 0 }
+            ],
+            impossible: [
+                { question: "Tahun dan bulan berapakah Mobile Legends pertama kali dirilis di platform Android?", options: ["Juli 2016", "Juli 2017", "Januari 2016", "Oktober 2016"], answer: 0 },
+                { question: "Siapa nama hero pertama yang diciptakan dan terdaftar dalam sistem internal ID Moonton?", options: ["Miya", "Layla", "Balmond", "Alucard"], answer: 0 },
+                { question: "Berapa atribut Physical Defense dasar yang dimiliki oleh Minion Cannon pada menit ke-10?", options: ["15", "30", "60", "90"], answer: 1 },
+                { question: "Apa nama kerajaan / wilayah asal dari Hero Tigreal dan Fanny dalam Lore MLBB?", options: ["Moniyan Empire", "Cadia Riverlands", "Nost Gal", "Abyss"], answer: 0 },
+                { question: "Berapa rasio konversi True Damage yang dihasilkan oleh item Endless Battle dari Physical Attack?", options: ["40%", "60%", "70%", "85%"], answer: 1 }
+            ]
+        }
+    };
+
+    // STATE GAME
+    let selectedGameMode = 'roblox';
+    let selectedDifficulty = 'easy';
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function selectMode(mode, element) {
+        selectedGameMode = mode;
+        document.querySelectorAll('.mode-grid .card-btn').forEach(btn => btn.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function selectDiff(diff, element) {
+        selectedDifficulty = diff;
+        document.querySelectorAll('.diff-grid .card-btn').forEach(btn => btn.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function startGame() {
+        currentQuestions = questionBank[selectedGameMode][selectedDifficulty];
+        currentQuestionIndex = 0;
+        score = 0;
+
+        document.getElementById("total-q").innerText = currentQuestions.length;
+        document.getElementById("home-screen").classList.add("hidden");
+        document.getElementById("end-screen").classList.add("hidden");
+        document.getElementById("game-screen").classList.remove("hidden");
+
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const q = currentQuestions[currentQuestionIndex];
+        document.getElementById("question-num").innerText = currentQuestionIndex + 1;
+        document.getElementById("score").innerText = score;
+        document.getElementById("question-text").innerText = q.question;
+
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        q.options.forEach((option, index) => {
+            const btn = document.createElement("button");
+            btn.className = "opt-btn";
+            btn.innerText = option;
+            btn.onclick = () => selectAnswer(index, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function selectAnswer(selectedIndex, btnElement) {
+        const q = currentQuestions[currentQuestionIndex];
+        const buttons = document.querySelectorAll("#options-container .opt-btn");
+
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (selectedIndex === q.answer) {
+            btnElement.classList.add("correct");
+            score += 20;
+        } else {
+            btnElement.classList.add("wrong");
+            buttons[q.answer].classList.add("correct");
+        }
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                showQuestion();
+            } else {
+                endGame();
+            }
+        }, 1200);
+    }
+
+    function endGame() {
+        document.getElementById("game-screen").classList.add("hidden");
+        document.getElementById("end-screen").classList.remove("hidden");
+
+        document.getElementById("res-mode").innerText = selectedGameMode.toUpperCase();
+        document.getElementById("res-diff").innerText = selectedDifficulty.toUpperCase();
+        document.getElementById("final-score").innerText = score + " PTS";
+
+        let maxScore = currentQuestions.length * 20;
+        let percentage = (score / maxScore) * 100;
+
+        let rank = "";
+        if (percentage === 100) {
+            rank = "🏆 Title: GOD HAND GAMER (Perfect!)";
+        } else if (percentage >= 70) {
+            rank = "⭐ Title: PRO GAMER!";
+        } else if (percentage >= 40) {
+            rank = "🛡️ Title: PLAYER CASUAL";
+        } else {
+            rank = "🧱 Title: NOOB GAMER, COBA LAGI!";
+        }
+        document.getElementById("rank-text").innerText = rank;
+    }
+
+    function goHome() {
+        document.getElementById("end-screen").classList.add("hidden");
+        document.getElementById("home-screen").classList.remove("hidden");
+    }
+</script>
+
+</body>
+</html>
